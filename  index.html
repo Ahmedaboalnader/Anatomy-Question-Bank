@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بنك أسئلة التشريح - Anatomy Question Bank</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .btn.active {
+            background: #764ba2;
+            color: white;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .question-card {
+            background: #f9f9f9;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .question-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+        
+        .question-card.active {
+            background: #f0f4ff;
+            border-color: #667eea;
+        }
+        
+        .question-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .question-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .question-ar {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-right: 3px solid #764ba2;
+            padding-right: 15px;
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 600px) {
+            .options {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .option {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+        
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .option.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .option.correct {
+            background: #4caf50;
+            color: white;
+            border-color: #4caf50;
+        }
+        
+        .option.incorrect {
+            background: #f44336;
+            color: white;
+            border-color: #f44336;
+        }
+        
+        .answer-section {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .answer-section.show {
+            display: block;
+        }
+        
+        .answer-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .answer-text {
+            color: #333;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .explanation {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 13px;
+            color: #555;
+            border-right: 3px solid #4caf50;
+            padding-right: 12px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 600px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .category-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        
+        .category-btn {
+            padding: 8px 15px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            color: #333;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .category-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+        
+        .category-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .questions-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 بنك أسئلة التشريح الشامل</h1>
+            <p>Anatomy Question Bank - Complete Solutions</p>
+            <p>إعداد: Dr. Waleed Dehim</p>
+        </div>
+        
+        <div class="content">
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-number" id="totalQuestions">110</div>
+                    <div class="stat-label">إجمالي الأسئلة</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="answeredCount">0</div>
+                    <div class="stat-label">تمت الإجابة عليها</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="correctCount">0</div>
+                    <div class="stat-label">الإجابات الصحيحة</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="percentage">0%</div>
+                    <div class="stat-label">نسبة النجاح</div>
+                </div>
+            </div>
+            
+            <input type="text" class="search-box" id="searchBox" placeholder="ابحث عن سؤال... Search questions...">
+            
+            <div class="category-filter" id="categoryFilter"></div>
+            
+            <div class="controls">
+                <button class="btn btn-primary" onclick="loadAllQuestions()">عرض جميع الأسئلة</button>
+                <button class="btn btn-secondary" onclick="resetAnswers()">إعادة تعيين</button>
+                <button class="btn btn-secondary" onclick="downloadResults()">تحميل النتائج</button>
+            </div>
+            
+            <div class="questions-list" id="questionsList"></div>
+        </div>
+    </div>
+    
+    <script>
+        // بيانات الأسئلة - جميع الأسئلة (110)
+        const allQuestions = [
+            // PART 1: Anatomical Position & Injections
+            {id: 1, part: "PART 1", category: "Anatomical Position", en: "What is the correct anatomical position of the region indicated by letter B?", ar: "ما هو الموضع التشريحي الصحيح للكف في منطقة B؟", options: ["Palm facing forward", "Palm facing sideways", "Palm facing backward", "Palm facing at an oblique angle"], correct: 0, explanation: "في الوضع التشريحي الصحيح، يكون الجسم واقفاً معتدلاً والكفان متجهتان للأمام تماماً."},
+            {id: 2, part: "PART 1", category: "Anatomical Position", en: "All of the following are correct regarding the correct anatomical position of the region indicated by letter A, EXCEPT:", ar: "كل العبارات التالية صحيحة عن الموضع التشريحي للوجه والعينين، ما عدا واحدة:", options: ["Eyes looking forward", "Face directed forward", "Eyes and face looking backward", "A&B"], correct: 2, explanation: "الإجابة C خاطئة لأنها تقول أن العينان والوجه ينظران للخلف، لكن في الوضع التشريحي الصحيح، العينان والوجه يكونان متجهين للأمام تماماً."},
+            {id: 3, part: "PART 1", category: "Anatomical Position", en: "What is the correct anatomical position regarding the region indicated by letter C?", ar: "ما هو الموضع التشريحي الصحيح للقدمين؟", options: ["Feet far apart", "Feet close together", "Heels far apart", "All of the above"], correct: 1, explanation: "في الوضع التشريحي الصحيح، تكون القدمان قريبتان من بعضهما بشكل طبيعي والأصابع تشير للأمام."},
+            {id: 4, part: "PART 1", category: "Injections", en: "What is the name of the injection indicated by letter B?", ar: "ما اسم الحقن الموضحة بالحرف B؟", options: ["Intravenous injection", "Intramuscular injection", "Subcutaneous injection", "Intradermal injection"], correct: 1, explanation: "الحقن العضلية تُعطى بزاوية 90 درجة وتخترق الجلد والأنسجة تحت الجلد لتصل مباشرة إلى العضلة."},
+            {id: 5, part: "PART 1", category: "Injections", en: "What is the correct angle for the subcutaneous injection (letter C)?", ar: "ما هي الزاوية الصحيحة للحقن تحت الجلد (الموضحة بـ C)؟", options: ["25°", "45°", "15°", "90°"], correct: 1, explanation: "الحقن تحت الجلد تُعطى بزاوية 45 درجة أو 90 درجة وتخترق الجلد والأنسجة الدهنية تحت الجلد."},
+            {id: 6, part: "PART 1", category: "Injections", en: "Which injection is used in allergy tests (intradermal injection)?", ar: "أي حقن تُستخدم في اختبارات الحساسية (الحقن داخل الجلد)؟", options: ["A", "B", "C", "D"], correct: 2, explanation: "حقن الحساسية تُعطى بزاوية صغيرة جداً (حوالي 10-15 درجة) وتكون سطحية في الطبقات العليا من الجلد فقط."},
+            {id: 7, part: "PART 1", category: "Injections", en: "Which injection has a 90-degree angle?", ar: "أي حقن تُعطى بزاوية 90 درجة (عمودية)؟", options: ["Subcutaneous", "Intradermal", "Intramuscular", "Intravenous"], correct: 2, explanation: "الحقن العضلية فقط تُعطى بزاوية 90 درجة لضمان وصول الدواء مباشرة إلى العضلة."},
+            
+            // PART 2: Body Positions
+            {id: 8, part: "PART 2", category: "Body Positions", en: "What is the correct medical term for the position shown by letter D?", ar: "ما اسم الوضعية الطبية الموضحة بالحرف D؟", options: ["Supine", "Prone", "Right lateral", "Trendelenburg"], correct: 3, explanation: "وضعية ترندلينبرج يكون فيها الرأس والجزء العلوي منخفضاً والقدمان والجزء السفلي مرفوعاً."},
+            {id: 9, part: "PART 2", category: "Body Positions", en: "What is the correct description of Trendelenburg position?", ar: "ما هو الوصف الصحيح لوضعية ترندلينبرج؟", options: ["Feet down and head up", "Head and feet down", "Feet up and head down", "All of the above"], correct: 2, explanation: "في وضعية ترندلينبرج، يكون الرأس منخفضاً والقدمان مرفوعتان بزاوية حوالي 45 درجة."},
+            
+            // PART 3: Bones & Skeletal System
+            {id: 10, part: "PART 3", category: "Bones", en: "What is the correct description of the region indicated by letter A?", ar: "ما هو الوصف الصحيح للعظام في منطقة A؟", options: ["Located within the axial bones", "Short bones", "Located within the peripheral bones", "All of the above"], correct: 0, explanation: "العظام المحورية (Axial bones) تشمل الجمجمة والعمود الفقري والقفص الصدري والعظم الحوضي."},
+            {id: 11, part: "PART 3", category: "Bones", en: "What is the correct description of the region indicated by letter B?", ar: "ما هو الوصف الصحيح للعظام في منطقة B؟", options: ["Located within the axial bones region", "Short bones", "Bones containing bone marrow", "A&B"], correct: 3, explanation: "العظام في هذه المنطقة تكون محورية وقصيرة نسبياً وتحتوي على نخاع عظمي يُنتج خلايا الدم."},
+            {id: 12, part: "PART 3", category: "Bones", en: "What is the correct description of the region indicated by letter D?", ar: "ما هو الوصف الصحيح للعظام في منطقة D؟", options: ["Long bones", "Peripheral bones", "Pneumatic bones", "All of the above"], correct: 3, explanation: "عظام الأطراف تكون طويلة وطرفية وبعضها يحتوي على تجاويف هوائية صغيرة."},
+            {id: 13, part: "PART 3", category: "Bones", en: "The joint located in the region indicated by letter C.", ar: "نوع المفصل الموجود في منطقة C؟", options: ["A joint belonging to pivot joints", "A joint belonging to cartilaginous joints", "A joint belonging to fibrous joints", "All of the above"], correct: 0, explanation: "مفصل البيفوت (Pivot joint) يسمح بحركة دورانية مثل هز الرأس من اليمين لليسار."},
+            {id: 14, part: "PART 3", category: "Bones", en: "What is the correct name of the bone indicated by letter A?", ar: "ما اسم العظم الموضح بالحرف A؟", options: ["Mandible", "Right ear bone", "Maxilla", "Frontal bone"], correct: 0, explanation: "الفك السفلي (Mandible) هو العظم الوحيد المتحرك في الجمجمة."},
+            {id: 15, part: "PART 3", category: "Bones", en: "What is the correct description of the suture indicated by letter B?", ar: "ما اسم الخط التشريحي الموضح بالحرف B؟", options: ["Sagittal Suture", "Coronal Suture", "Oblique plane", "Transverse plane"], correct: 1, explanation: "خط التاج (Coronal suture) يمتد من جانب الجمجمة لآخر."},
+            {id: 16, part: "PART 3", category: "Bones", en: "What is the suture indicated by letter D?", ar: "ما اسم الخط التشريحي الموضح بالحرف D؟", options: ["Sagittal Suture", "Coronal Suture", "Lambdoid Suture", "Oblique plane"], correct: 2, explanation: "خط لامبدا (Lambdoid suture) يوجد في مؤخرة الجمجمة وشكله يشبه حرف Λ."},
+            
+            // PART 4: Muscles
+            {id: 17, part: "PART 4", category: "Muscles", en: "All of the following are correct regarding the image indicated by letter B EXCEPT:", ar: "كل العبارات صحيحة عن العضلات في B ما عدا واحدة:", options: ["All are found in the voluntary skeletal system", "All are striated muscles", "All are innervated by the parasympathetic nervous system", "All are important in movement and locomotion"], correct: 2, explanation: "العضلات الهيكلية الإرادية لا تُتحكم فيها الأعصاب الباراسمبثاوية، بل تُتحكم فيها الأعصاب الحركية الطوعية."},
+            {id: 18, part: "PART 4", category: "Muscles", en: "What is the correct description of the region indicated by letter A?", ar: "ما هو نوع العضلة في منطقة A؟", options: ["Voluntary muscle", "Smooth muscle", "No striations", "Cardiac muscle"], correct: 3, explanation: "عضلة القلب (Cardiac muscle) مخططة ولكن لا إرادية تتقلص تلقائياً."},
+            {id: 19, part: "PART 4", category: "Muscles", en: "All of the following are false regarding the region indicated by letter C except", ar: "كل العبارات خاطئة عن العضلات في C ما عدا واحدة صحيحة:", options: ["Muscle under voluntary control", "Muscle lacks striations", "Muscle found in blood vessels", "All of the above"], correct: 2, explanation: "العضلة الملساء (Smooth muscle) موجودة في جدران الأوعية الدموية والأمعاء والمريء."},
+            {id: 20, part: "PART 4", category: "Muscles", en: "Which muscle is composed of more than one nucleus per cell?", ar: "أي عضلة تحتوي على أكثر من نواة واحدة في الخلية؟", options: ["A", "B", "C", "All of the above"], correct: 1, explanation: "العضلات الهيكلية (B) متعددة الأنوية (Multinucleated)."},
+            {id: 21, part: "PART 4", category: "Muscles", en: "Which muscle is found in the heart?", ar: "أي عضلة توجد في القلب؟", options: ["A", "B", "C", "A&B"], correct: 0, explanation: "عضلة القلب (Cardiac muscle) الممثلة بـ A هي الموجودة في القلب."},
+            
+            // PART 5: Cardiovascular System - Arteries
+            {id: 22, part: "PART 5", category: "Arteries", en: "What is the correct description of the region indicated by letter B?", ar: "ما هو الوصف الصحيح للشريان في منطقة B؟", options: ["Ascending aorta", "Coronary artery carrying CO2", "Coronary artery carrying O2", "Pulmonary artery"], correct: 2, explanation: "الشرايين التاجية تغذي عضلة القلب نفسها بدم غني بالأكسجين."},
+            {id: 23, part: "PART 5", category: "Arteries", en: "What is the correct description of the region indicated by letter D?", ar: "ما هو الوصف الصحيح للشريان في منطقة D؟", options: ["Right common subclavian artery", "Brachiocephalic artery", "Left common subclavian artery", "Carotid artery"], correct: 1, explanation: "الشريان ذو الرأسين (Brachiocephalic artery) ينقسم إلى الشريان السباتي والترقوي الأيمن."},
+            {id: 24, part: "PART 5", category: "Arteries", en: "All of the following are correct regarding the region indicated by letter C EXCEPT:", ar: "كل العبارات صحيحة عن الشريان في C ما عدا واحدة:", options: ["Artery carrying oxygenated blood", "Right common carotid artery", "Artery supplying left side of neck and head", "All of the above"], correct: 2, explanation: "الشريان السباتي الأيمن يغذي الجانب الأيمن من الرقبة والرأس، لا الأيسر."},
+            {id: 25, part: "PART 5", category: "Arteries", en: "All of the following are false regarding the region indicated by letter E EXCEPT:", ar: "كل العبارات خاطئة عن الشريان في E ما عدا واحدة صحيحة:", options: ["Right carotid artery", "Right subclavian artery", "Left subclavian artery", "Brachiocephalic artery"], correct: 3, explanation: "E تشير للشريان ذو الرأسين الذي ينقسم إلى فروع."},
+            {id: 26, part: "PART 5", category: "Arteries", en: "Which artery is responsible for carrying oxygenated blood to the left side of the neck and head?", ar: "أي شريان ينقل دم مؤكسج إلى الجانب الأيسر من الرقبة والرأس؟", options: ["E", "B", "D", "A"], correct: 2, explanation: "الشريان السباتي الأيسر (D) ينقل دم مؤكسج مباشرة من الأبهر إلى الجانب الأيسر من الرقبة والرأس."},
+            
+            // PART 6: Heart Anatomy
+            {id: 27, part: "PART 6", category: "Heart", en: "What is the part indicated by letter A?", ar: "ما اسم الجزء A في القلب؟", options: ["Superior vena cava", "Aorta", "Pulmonary artery", "Pulmonary vein"], correct: 0, explanation: "الوريد الأجوف العلوي ينقل الدم غير المؤكسج من الجزء العلوي من الجسم إلى الأذين الأيمن."},
+            {id: 28, part: "PART 6", category: "Heart", en: "What is the part indicated by letter B?", ar: "ما اسم الجزء B في القلب؟", options: ["Right ventricle", "Left ventricle", "Left atrium", "Right atrium"], correct: 3, explanation: "الأذين الأيمن يستقبل الدم غير المؤكسج من الأوردة الجوفاء."},
+            {id: 29, part: "PART 6", category: "Heart", en: "Which part receives deoxygenated blood from the body to the heart?", ar: "أي جزء في القلب يستقبل الدم غير المؤكسج من الجسم؟", options: ["A", "B", "C", "D"], correct: 0, explanation: "الوريد الأجوف العلوي (A) ينقل الدم غير المؤكسج من الجزء العلوي للجسم."},
+            {id: 30, part: "PART 6", category: "Heart", en: "Which of the following parts pumps oxygenated blood to the entire body?", ar: "أي جزء يضخ الدم المؤكسج إلى كل جسم الإنسان؟", options: ["B", "C", "D", "E"], correct: 1, explanation: "البطين الأيسر (C) يضخ الدم المؤكسج عبر الأبهر إلى جميع أنحاء الجسم."},
+            {id: 31, part: "PART 6", category: "Heart", en: "Which part carries oxygenated blood after it leaves the lungs?", ar: "أي جزء ينقل الدم المؤكسج بعد خروجه من الرئتين؟", options: ["A", "D", "E", "Pulmonary vein"], correct: 2, explanation: "الأوردة الرئوية (E) تنقل الدم المؤكسج من الرئتين إلى الأذين الأيسر للقلب."},
+            {id: 32, part: "PART 6", category: "Heart", en: "Which parts in the diagram receive blood loaded with CO2?", ar: "أي أجزاء من القلب تستقبل دم محمل بثاني أكسيد الكربون؟", options: ["A and B", "D and E", "A and D", "B and E"], correct: 2, explanation: "الوريد الأجوف (A) والأذين الأيمن (D) يستقبلان الدم غير المؤكسج المحمل بثاني أكسيد الكربون."},
+            {id: 33, part: "PART 6", category: "Heart", en: "What is the valve indicated by letter C?", ar: "ما اسم الصمام في الموضع C؟", options: ["Aortic valve", "Pulmonary valve", "Tricuspid valve", "Mitral valve"], correct: 3, explanation: "الصمام الميترالي أو ثنائي الشرف يوجد بين الأذين الأيسر والبطين الأيسر."},
+            
+            // PART 7: Blood Vessels
+            {id: 34, part: "PART 7", category: "Blood Vessels", en: "Which of the following vessels contains valves to prevent backflow of blood?", ar: "أي من الأوعية الدموية تحتوي على صمامات تمنع رجوع الدم؟", options: ["Arteries only", "Veins only", "Capillaries only", "All of the above"], correct: 1, explanation: "الأوردة (Veins) تحتوي على صمامات واضحة لمنع رجوع الدم."},
+            {id: 35, part: "PART 7", category: "Blood Vessels", en: "Which of the following is an artery?", ar: "أي من الخيارات يمثل شريان؟", options: ["A", "B", "None of the above", "Both A and B"], correct: 0, explanation: "الشرايين ناقلة للدم بعيداً عن القلب بضغط عالي."},
+            {id: 36, part: "PART 7", category: "Blood Vessels", en: "Which part in the image carries oxygen-rich blood?", ar: "أي جزء ينقل دم غني بالأكسجين؟", options: ["A", "B", "Capillaries", "None of the above"], correct: 0, explanation: "الشرايين تنقل دم غني بالأكسجين من القلب إلى الجسم."},
+            {id: 37, part: "PART 7", category: "Blood Vessels", en: "All of the following are true regarding structure A EXCEPT:", ar: "كل العبارات صحيحة عن الشريان ما عدا واحدة:", options: ["No valves are present", "Carries oxygen-rich blood", "Wall is thick", "May carry CO2 in some locations"], correct: 3, explanation: "الشرايين تنقل دم مؤكسج بشكل عام إلا الشريان الرئوي."},
+            {id: 38, part: "PART 7", category: "Blood Vessels", en: "Why is an artery used in the corresponding medical procedure?", ar: "لماذا يُستخدم الشريان في إجراء قياس النبض؟", options: ["Due to absence of valves", "Due to presence of pulse", "Due to presence of oxygen in blood", "Due to presence of CO2 in blood"], correct: 1, explanation: "الشرايين تحتوي على نبض واضح ومنتظم."},
+            {id: 39, part: "PART 7", category: "Blood Vessels", en: "What is the medical procedure indicated by letter B?", ar: "ما الإجراء الطبي الذي يتم على الشريان؟", options: ["Measuring blood pressure", "Measuring heart rate", "Measuring dehydration", "All of the above"], correct: 0, explanation: "قياس ضغط الدم يتم عن طريق الضغط على الشريان."},
+            {id: 40, part: "PART 7", category: "Blood Vessels", en: "Why is a vein not used in the corresponding medical procedure?", ar: "لماذا لا نستخدم الوريد في قياس النبض؟", options: ["Due to lack of oxygen in blood", "Due to presence of valves in vein", "Due to lack of pulse in vein", "Due to thin wall of vein"], correct: 2, explanation: "الأوردة لا تحتوي على نبض واضح لأن الدم يتحرك فيها ببطء."},
+            
+            // PART 8: Mouth & Oral Cavity
+            {id: 41, part: "PART 8", category: "Mouth", en: "What does arrow A point to?", ar: "ماذا تشير الأسهم A في الفم؟", options: ["Molars", "Tongue", "Incisors", "Tonsil"], correct: 2, explanation: "القواطع (Incisors) هي الأسنان الأمامية المسطحة المستخدمة في قطع الطعام."},
+            {id: 42, part: "PART 8", category: "Mouth", en: "The part indicated by letter C is:", ar: "الجزء C في الفم يشير إلى:", options: ["Tonsil", "Tongue", "Teeth", "All of the above"], correct: 2, explanation: "الأسنان (Teeth) موجودة في الفكين العلوي والسفلي."},
+            {id: 43, part: "PART 8", category: "Mouth", en: "What is the name of the part indicated by letter B?", ar: "ما اسم الجزء B في الفم؟", options: ["Teeth", "Tongue", "Tonsil", "Soft palate"], correct: 1, explanation: "اللسان (Tongue) عضو عضلي متحرك في الفم يساعد في البلع والكلام."},
+            {id: 44, part: "PART 8", category: "Mouth", en: "How does part B contribute to the digestive system?", ar: "كيف يساهم اللسان في الجهاز الهضمي؟", options: ["Insulin production", "Swallowing air", "Moving food and mixing with saliva", "Breaking down fats"], correct: 2, explanation: "اللسان يحرك الطعام ويخلطه باللعاب لتسهيل البلع والهضم."},
+            
+            // PART 9: Digestive System
+            {id: 45, part: "PART 9", category: "Digestive System", en: "The organ indicated by A is:", ar: "العضو A في الجهاز الهضمي هو:", options: ["Liver", "Stomach", "Spleen", "Pancreas"], correct: 0, explanation: "الكبد أكبر أعضاء الجهاز الهضمي وتُنتج الصفراء."},
+            {id: 46, part: "PART 9", category: "Digestive System", en: "Organ B is:", ar: "العضو B في الجهاز الهضمي هو:", options: ["Small intestine", "Large intestine", "Esophagus", "Stomach"], correct: 0, explanation: "الأمعاء الدقيقة تقوم بامتصاص معظم المغذيات من الطعام المهضوم."},
+            {id: 47, part: "PART 9", category: "Digestive System", en: "Arrow C points to:", ar: "السهم C يشير إلى:", options: ["Esophagus", "Trachea", "Pharynx", "Tongue"], correct: 0, explanation: "المريء (Esophagus) أنبوب عضلي ينقل الطعام من البلعوم إلى المعدة."},
+            {id: 48, part: "PART 9", category: "Digestive System", en: "Where is bile produced?", ar: "أين يتم إنتاج الصفراء؟", options: ["A (Liver)", "B (Small intestine)", "C (Esophagus)", "D (Other organs)"], correct: 0, explanation: "الكبد ينتج الصفراء وتُخزن في المرارة."},
+            {id: 49, part: "PART 9", category: "Digestive System", en: "Organ B ends at:", ar: "العضو B (الأمعاء الدقيقة) ينتهي عند:", options: ["Anus", "Stomach", "Duodenum", "Mouth"], correct: 0, explanation: "الأمعاء الدقيقة تنتهي حيث تبدأ الأمعاء الغليظة، والأمعاء الغليظة تنتهي بفتحة الشرج."},
+            
+            // PART 10: Bone Structure
+            {id: 50, part: "PART 10", category: "Bone Structure", en: "What does arrow A point to?", ar: "السهم A في تركيب العظم يشير إلى:", options: ["Compact bone", "Yellow marrow", "Spongy bone", "Blood vessels"], correct: 0, explanation: "العظم الكثيف (Compact bone) هو الطبقة الخارجية الصلبة والقوية للعظم."},
+            {id: 51, part: "PART 10", category: "Bone Structure", en: "What does arrow B point to?", ar: "السهم B في تركيب العظم يشير إلى:", options: ["Compact bone", "Spongy bone", "Red marrow", "Haversian canal"], correct: 1, explanation: "العظم الإسفنجي (Spongy bone) يقع في الجزء الداخلي من العظم ويحتوي على نخاع."},
+            {id: 52, part: "PART 10", category: "Bone Structure", en: "What is the main function of the spongy bone region shown?", ar: "ما هي الوظيفة الأساسية للعظم الإسفنجي والنخاع الأحمر؟", options: ["Fat storage", "Blood cell production", "Tendon support", "Oxygen transport"], correct: 1, explanation: "العظم الإسفنجي يحتوي على النخاع الأحمر الذي ينتج خلايا الدم."},
+            {id: 53, part: "PART 10", category: "Bone Structure", en: "What type of bone is shown in figure C?", ar: "ما نوع العظم الموضح في الشكل C؟", options: ["Irregular bone", "Short bone", "Long bone", "Flat bone"], correct: 2, explanation: "العظم الطويل (Long bone) له شكل أسطواني مع نهايات عريضة."},
+            
+            // PART 11: Vertebral Column
+            {id: 54, part: "PART 11", category: "Vertebral Column", en: "What does letter A point to?", ar: "الحرف A في العمود الفقري يشير إلى:", options: ["Cervical vertebrae", "Thoracic vertebrae", "Lumbar vertebrae", "Sacral vertebrae"], correct: 0, explanation: "الفقرات العنقية (Cervical vertebrae) 7 فقرات تدعم الرأس والرقبة."},
+            {id: 55, part: "PART 11", category: "Vertebral Column", en: "What does letter B point to?", ar: "الحرف B في العمود الفقري يشير إلى:", options: ["Sacral vertebrae", "Lumbar vertebrae", "Thoracic vertebrae", "Coccyx"], correct: 1, explanation: "الفقرات القطنية (Lumbar vertebrae) 5 فقرات تقع في أسفل الظهر."},
+            {id: 56, part: "PART 11", category: "Vertebral Column", en: "What does letter C point to?", ar: "الحرف C في العمود الفقري يشير إلى:", options: ["Lumbar vertebrae", "Cervical vertebrae", "Sacral vertebrae", "Thoracic vertebrae"], correct: 3, explanation: "الفقرات الصدرية (Thoracic vertebrae) 12 فقرة تشكل الظهر الوسطي."},
+            {id: 57, part: "PART 11", category: "Vertebral Column", en: "What does letter D point to?", ar: "الحرف D في العمود الفقري يشير إلى:", options: ["Coccyx", "Sacrum", "Lumbar vertebra", "Thoracic spine"], correct: 1, explanation: "العجز (Sacrum) عظمة واحدة مندمجة من 5 فقرات عجزية."},
+            {id: 58, part: "PART 11", category: "Vertebral Column", en: "The number of vertebrae in section C is:", ar: "عدد الفقرات في الفقرات الصدرية:", options: ["5", "7", "12", "4"], correct: 2, explanation: "الفقرات الصدرية 12 فقرة تقابل 12 زوج ضلع في القفص الصدري."},
+            {id: 59, part: "PART 11", category: "Vertebral Column", en: "What type of vertebrae are in section D?", ar: "ما نوع الفقرات في العجز والعصعص؟", options: ["Articulated", "Twisted", "Fused", "All of the above"], correct: 2, explanation: "فقرات العجز والعصعص مندمجة ومتحدة في عظم واحد."},
+            
+            // PART 12: Intestines
+            {id: 60, part: "PART 12", category: "Intestines", en: "What is the organ indicated by letter A?", ar: "العضو A في الأمعاء هو:", options: ["Stomach", "Small intestine", "Right colic flexure", "Left colic flexure"], correct: 0, explanation: "المعدة (Stomach) هي الكيس العضلي الذي يستقبل الطعام من المريء."},
+            {id: 61, part: "PART 12", category: "Intestines", en: "The function of the organ indicated by letter B is:", ar: "وظيفة العضو B (الأمعاء الدقيقة) هي:", options: ["Nutrient absorption", "Food storage", "Digestive juice production", "Waste excretion"], correct: 0, explanation: "الأمعاء الدقيقة تقوم بامتصاص معظم المغذيات."},
+            {id: 62, part: "PART 12", category: "Intestines", en: "The organ indicated by letter C is:", ar: "العضو C هو:", options: ["Large intestine", "Jejunum", "Liver", "Pancreas"], correct: 0, explanation: "الأمعاء الغليظة (Colon) تمتص الماء والأملاح وتخزن النفايات."},
+            {id: 63, part: "PART 12", category: "Intestines", en: "What is the organ indicated by letter E?", ar: "العضو E هو:", options: ["Esophagus", "Sigmoid colon", "Ileum", "Gallbladder"], correct: 2, explanation: "الدقاق أو الجزء الأخير من الأمعاء الدقيقة (Ileum) يمتص المغذيات النهائية."},
+            {id: 64, part: "PART 12", category: "Intestines", en: "What is the name of the part indicated by letter D?", ar: "ما اسم الجزء D؟", options: ["Cecum", "Jejunum", "Duodenum", "Anal canal"], correct: 0, explanation: "الأعور (Cecum) هو الجزء الأول من الأمعاء الغليظة."},
+            {id: 65, part: "PART 12", category: "Intestines", en: "Which is the longest part among the following?", ar: "أي جزء هو الأطول من بين الأجزاء التالية؟", options: ["B (Small intestine)", "D (Cecum)", "E (Ileum)", "None of the above"], correct: 0, explanation: "الأمعاء الدقيقة (حوالي 6 متر) أطول بكثير من الأمعاء الغليظة."},
+            
+            // PART 13: Salivary Glands
+            {id: 66, part: "PART 13", category: "Salivary Glands", en: "What is the organ indicated by letter A?", ar: "الغدة A هي:", options: ["Parotid gland", "Sublingual gland", "Submandibular gland", "Thyroid gland"], correct: 0, explanation: "الغدة النكفية (Parotid gland) هي أكبر الغدد اللعابية."},
+            {id: 67, part: "PART 13", category: "Salivary Glands", en: "The function of the gland indicated by letter B is:", ar: "وظيفة الغدة B هي:", options: ["Saliva secretion", "Digestive enzyme secretion", "Hormone production", "Food storage"], correct: 0, explanation: "كل الغدد اللعابية تفرز اللعاب الذي يحتوي على إنزيمات هضمية."},
+            {id: 68, part: "PART 13", category: "Salivary Glands", en: "What is the organ indicated by letter C?", ar: "الغدة C هي:", options: ["Sublingual gland", "Parotid gland", "Thyroid gland", "Major salivary gland"], correct: 0, explanation: "الغدة تحت اللسان (Sublingual gland) أصغر غدة لعابية."},
+            {id: 69, part: "PART 13", category: "Salivary Glands", en: "Which of the following salivary glands is the largest?", ar: "أي من الغدد اللعابية هي الأكبر؟", options: ["A (Parotid)", "B (Submandibular)", "C (Sublingual)", "All of the above"], correct: 0, explanation: "الغدة النكفية (Parotid) هي أكبر الغدد اللعابية."},
+            
+            // PART 14: Urinary System
+            {id: 70, part: "PART 14", category: "Urinary System", en: "What is the organ indicated by letter A?", ar: "العضو A في الجهاز البولي هو:", options: ["Ureter", "Urinary bladder", "Kidney", "Urethra"], correct: 2, explanation: "الكلى (Kidney) تقوم بتنقية الدم وتكوين البول."},
+            {id: 71, part: "PART 14", category: "Urinary System", en: "What is the organ indicated by letter B?", ar: "العضو B هو:", options: ["Kidney", "Ureter stone", "Kidney stone", "Urinary bladder"], correct: 3, explanation: "المثانة البولية (Urinary bladder) تخزن البول."},
+            {id: 72, part: "PART 14", category: "Urinary System", en: "What is the part indicated by letter C?", ar: "الجزء C هو:", options: ["Urethra", "Ureter", "Renal stone", "Renal pelvis"], correct: 1, explanation: "الحالب (Ureter) أنبوب عضلي ينقل البول من الكلى إلى المثانة."},
+            {id: 73, part: "PART 14", category: "Urinary System", en: "What is the organ indicated by letter D?", ar: "العضو D هو:", options: ["Ureter", "Urinary bladder", "Kidney", "Ejaculatory duct"], correct: 1, explanation: "المثانة تخزن البول وترسل إشارة للدماغ بالحاجة للتبول."},
+            {id: 74, part: "PART 14", category: "Urinary System", en: "What is the normal path of urine flow?", ar: "ما هو مسار البول الطبيعي؟", options: ["D→B→A", "B→D→A", "D→B→A", "A→B→D"], correct: 2, explanation: "المسار الصحيح: الكلى تنتج البول → الحالب ينقله → المثانة تخزنه → الإحليل يفرغه."},
+            
+            // PART 15: Respiratory System
+            {id: 75, part: "PART 15", category: "Respiratory System", en: "What is the organ indicated by letter A?", ar: "العضو A في الجهاز التنفسي هو:", options: ["Bronchi", "Left lung", "Trachea", "Diaphragm"], correct: 2, explanation: "القصبة الهوائية (Trachea) أنبوب غضروفي ينقل الهواء من الحنجرة إلى الرئتين."},
+            {id: 76, part: "PART 15", category: "Respiratory System", en: "What is the organ indicated by letter B?", ar: "العضو B هو:", options: ["Trachea", "Bronchi", "Pharynx", "Larynx"], correct: 1, explanation: "الشعب الهوائية (Bronchi) تتفرع من القصبة الهوائية وتدخل الرئتين."},
+            {id: 77, part: "PART 15", category: "Respiratory System", en: "What is the organ indicated by letter C?", ar: "العضو C هو:", options: ["Mouth", "Nose", "Pharynx", "Larynx"], correct: 2, explanation: "البلعوم (Pharynx) قناة مشتركة بين الجهاز الهضمي والتنفسي."},
+            {id: 78, part: "PART 15", category: "Respiratory System", en: "What is the organ indicated by letter D?", ar: "العضو D هو:", options: ["Trachea", "Larynx", "Pharynx", "Bronchi"], correct: 1, explanation: "الحنجرة (Larynx) تحتوي على الأحبال الصوتية."},
+            
+            // PART 16: Male Reproductive System
+            {id: 79, part: "PART 16", category: "Male Reproductive", en: "What is the name of the part indicated by letter E?", ar: "اسم الجزء E هو:", options: ["Testis", "Urinary bladder", "Seminal vesicle", "Prostate gland"], correct: 0, explanation: "الخصية (Testis) تُنتج الحيوانات المنوية والهرمونات الذكرية."},
+            {id: 80, part: "PART 16", category: "Male Reproductive", en: "What is the name of the part indicated by letter B?", ar: "اسم الجزء B هو:", options: ["Urethra", "Vas deferens", "Rectum", "Testis"], correct: 1, explanation: "الأسهر (Vas deferens) قناة تنقل الحيوانات المنوية من الخصية."},
+            {id: 81, part: "PART 16", category: "Male Reproductive", en: "What is the function of the part indicated by letter D?", ar: "وظيفة الجزء D هي:", options: ["Urine transport", "Sperm production", "Semen transport", "Urine storage"], correct: 2, explanation: "البروستاتا (D) تفرز السائل البروستاتي الذي يشكل جزء من السائل المنوي."},
+            {id: 82, part: "PART 16", category: "Male Reproductive", en: "What is the organ indicated by letter C?", ar: "العضو C هو:", options: ["Epididymis", "Cowper's gland", "Ejaculatory duct", "Seminal vesicle"], correct: 3, explanation: "الحويصلة المنوية (Seminal vesicle) تفرز سائل يغذي الحيوانات المنوية."},
+            {id: 83, part: "PART 16", category: "Male Reproductive", en: "What is the name of the organ indicated by letter H?", ar: "اسم العضو H هو:", options: ["Vas deferens", "Urethra", "Ureter", "Seminal vesicle"], correct: 1, explanation: "الإحليل (Urethra) قناة نهائية تنقل البول والسائل المنوي."},
+            {id: 84, part: "PART 16", category: "Male Reproductive", en: "Which part is shared by both urine and semen?", ar: "أي جزء يشترك بين مسار البول والسائل المنوي؟", options: ["E (Testis)", "D (Prostate)", "A (Testis)", "C (Seminal vesicle)"], correct: 1, explanation: "الإحليل (H) هو الجزء الوحيد الذي يمر فيه البول والسائل المنوي معاً."},
+            
+            // PART 17: Endocrine System
+            {id: 85, part: "PART 17", category: "Endocrine System", en: "What is the name of the gland indicated by letter A?", ar: "اسم الغدة A هو:", options: ["Adrenal gland", "Pituitary gland", "Thyroid gland", "Thymus gland"], correct: 0, explanation: "الغدة الكظرية (Adrenal gland) تقع فوق الكلى وتفرز الهرمونات."},
+            {id: 86, part: "PART 17", category: "Endocrine System", en: "What is the name of the organ indicated by letter B?", ar: "اسم العضو B هو:", options: ["Pancreas", "Thyroid gland", "Parathyroid gland", "Pineal gland"], correct: 1, explanation: "الغدة الدرقية (Thyroid gland) تقع في الرقبة وتفرز هرمونات التمثيل الغذائي."},
+            {id: 87, part: "PART 17", category: "Endocrine System", en: "Which gland secretes adrenaline and noradrenaline?", ar: "أي غدة تفرز الأدرينالين والنور أدرينالين؟", options: ["A (Adrenal)", "B (Thyroid)", "D (Thymus)", "C (Parathyroid)"], correct: 0, explanation: "الغدة الكظرية تفرز هرمونات التوتر والطاقة."},
+            {id: 88, part: "PART 17", category: "Endocrine System", en: "The organ indicated by letter D is:", ar: "العضو D هو:", options: ["Kidney", "Adrenal gland", "Pancreas", "Liver"], correct: 1, explanation: "الغدة الكظرية تقع فوق الكلى على كل جانب من العمود الفقري."},
+            {id: 89, part: "PART 17", category: "Endocrine System", en: "What is the name of the gland indicated by letter E?", ar: "اسم الغدة E هو:", options: ["Pituitary gland", "Islets of Langerhans", "Thyroid gland", "Thymus gland"], correct: 1, explanation: "جزر لانجرهانز (Islets of Langerhans) في البنكرياس تفرز الأنسولين والجلوكاجون."},
+            {id: 90, part: "PART 17", category: "Endocrine System", en: "What is the organ indicated by letter F?", ar: "العضو F هو:", options: ["Adrenal gland", "Testes/Ovaries", "Urinary bladder", "Kidney"], correct: 1, explanation: "الخصيتان والمبيضان (Gonads) تفرز الهرمونات الجنسية."},
+            
+            // PART 18: Brain Lobes
+            {id: 91, part: "PART 18", category: "Brain Lobes", en: "What is the name of the lobe indicated by letter A?", ar: "اسم الفص A هو:", options: ["Frontal lobe", "Occipital lobe", "Parietal lobe", "Temporal lobe"], correct: 0, explanation: "الفص الجبهي (Frontal lobe) مسؤول عن التفكير والحكم والتحكم الحركي."},
+            {id: 92, part: "PART 18", category: "Brain Lobes", en: "The largest lobe of the brain is:", ar: "أكبر فص في الدماغ هو:", options: ["B (Occipital)", "C (Parietal)", "D (Temporal)", "A (Frontal)"], correct: 3, explanation: "الفص الجبهي هو أكبر فص في الدماغ."},
+            {id: 93, part: "PART 18", category: "Brain Lobes", en: "Lobe C is called:", ar: "الفص C يُسمى:", options: ["Frontal lobe", "Occipital lobe", "Parietal lobe", "Temporal lobe"], correct: 2, explanation: "الفص الجداري (Parietal lobe) يقع خلف الفص الجبهي."},
+            {id: 94, part: "PART 18", category: "Brain Lobes", en: "Lobe D is known as:", ar: "الفص D يُعرف باسم:", options: ["Occipital lobe", "Temporal lobe", "Frontal lobe", "Parietal lobe"], correct: 1, explanation: "الفص الصدغي (Temporal lobe) يقع على جانب الدماغ."},
+            
+            // PART 19: Female Reproductive System
+            {id: 95, part: "PART 19", category: "Female Reproductive", en: "The organ indicated by letter A is:", ar: "العضو A هو:", options: ["Fallopian tube", "Ovary", "Cervix", "Vagina"], correct: 0, explanation: "قناة فالوب (Fallopian tube) تنقل البويضة من المبيض إلى الرحم."},
+            {id: 96, part: "PART 19", category: "Female Reproductive", en: "Letter C points to:", ar: "الحرف C يشير إلى:", options: ["Ovary", "Fallopian tube", "Cervix", "Vagina"], correct: 2, explanation: "عنق الرحم (Cervix) جزء ضيق من الرحم يفتح في المهبل."},
+            {id: 97, part: "PART 19", category: "Female Reproductive", en: "What is the name of the part indicated by letter B?", ar: "اسم الجزء B هو:", options: ["Vagina", "Uterus", "Cervix", "Fallopian tube"], correct: 1, explanation: "الرحم (Uterus) عضو يتطور فيه الجنين."},
+            {id: 98, part: "PART 19", category: "Female Reproductive", en: "The organ that produces eggs is represented by letter:", ar: "العضو الذي ينتج البويضات يُمثل بـ:", options: ["A", "B", "C", "D"], correct: 0, explanation: "المبيض (Ovary) الممثل بـ A ينتج البويضات."},
+            {id: 99, part: "PART 19", category: "Female Reproductive", en: "Which organ nurtures the fetus and is responsible for menstruation?", ar: "أي عضو يرعى الجنين ومسؤول عن الدورة الشهرية؟", options: ["A", "B", "C", "D"], correct: 1, explanation: "الرحم (B) يستقبل البويضة المخصبة وينموها."},
+            
+            // PART 20: Brain Stem & Nerves
+            {id: 100, part: "PART 20", category: "Brain Stem", en: "What is the name of the part indicated by letter A?", ar: "اسم الجزء A هو:", options: ["Cerebellum", "Pons", "Midbrain", "Forebrain"], correct: 3, explanation: "مقدمة الدماغ (Forebrain) تشمل المخ والثلاموس."},
+            {id: 101, part: "PART 20", category: "Brain Stem", en: "Letter C points to:", ar: "الحرف C يشير إلى:", options: ["Midbrain", "Medulla oblongata", "Cerebellum", "Pons"], correct: 2, explanation: "المخيخ (Cerebellum) يتحكم في التوازن والتنسيق الحركي."},
+            {id: 102, part: "PART 20", category: "Brain Stem", en: "What is the name of the nerve represented by letter B?", ar: "اسم العصب الممثل بـ B هو:", options: ["Ventral root of C1", "Oculomotor", "Motor and sensory root of trigeminal", "Optic"], correct: 1, explanation: "العصب المحرك للعين (Oculomotor nerve) يتحكم في حركة العين."},
+            {id: 103, part: "PART 20", category: "Brain Stem", en: "Nerve D refers to:", ar: "العصب D يشير إلى:", options: ["Ventral root of C1", "Oculomotor", "Motor and sensory root of trigeminal", "Optic"], correct: 3, explanation: "العصب البصري (Optic nerve) ينقل إشارات الرؤية من العين إلى الدماغ."},
+            
+            // PART 21: First Aid
+            {id: 104, part: "PART 21", category: "First Aid", en: "What is the problem shown in image B?", ar: "ما المشكلة الموضحة بالصورة B؟", options: ["Lymph node inflammation", "Skin wound", "Facial burn", "Nosebleed"], correct: 3, explanation: "نزيف الأنف (Nosebleed) حالة شائعة قد تحدث بسبب إصابة أو جفاف."},
+            {id: 105, part: "PART 21", category: "First Aid", en: "What is the first aid used for nosebleed?", ar: "ما الإسعافات الأولية لنزيف الأنف؟", options: ["Lie down flat", "Sit upright and lean forward", "Lie back with head tilted back", "Maintain horizontal position"], correct: 1, explanation: "الجلوس منتصباً والانحناء للأمام هو الوضع الصحيح لنزيف الأنف."},
+            {id: 106, part: "PART 21", category: "First Aid", en: "What is the proper compression technique for severe bleeding?", ar: "ما هي تقنية الضغط الصحيحة للنزيف الشديد؟", options: ["Press gently with clean cloth", "Apply firm continuous pressure with clean gauze", "Use tourniquet immediately", "Elevate and apply ice only"], correct: 1, explanation: "الضغط القوي المستمر بشاش نظيف هو الإسعافات الأولية الأساسية."},
+            {id: 107, part: "PART 21", category: "First Aid", en: "When should a tourniquet be applied?", ar: "متى يُستخدم الرباط الضاغط (Tourniquet)؟", options: ["For all wounds", "For life-threatening limb hemorrhage not controlled by direct pressure", "For minor bleeding", "Instead of direct pressure"], correct: 1, explanation: "الرباط الضاغط يُستخدم فقط عندما يكون النزيف مهدداً للحياة."},
+            {id: 108, part: "PART 21", category: "First Aid", en: "What should be done for a choking victim?", ar: "ماذا يجب فعله للشخص المختنق؟", options: ["Leave them alone", "Apply Heimlich maneuver", "Give water immediately", "Lie them down flat"], correct: 1, explanation: "مناورة هايملك (Heimlich maneuver) تساعد على إخراج الجسم الغريب."},
+            {id: 109, part: "PART 21", category: "First Aid", en: "What is the recovery position used for?", ar: "ما استخدام وضعية الاستشفاء (Recovery Position)؟", options: ["For conscious patients only", "For unconscious breathing patients", "For broken bones only", "For all emergency patients"], correct: 1, explanation: "وضعية الاستشفاء تُستخدم للمريض فاقد الوعي الذي يتنفس."},
+            {id: 110, part: "PART 21", category: "First Aid", en: "How should CPR be performed on an adult?", ar: "كيف يتم إجراء الإنعاش (CPR) للبالغ؟", options: ["30 compressions : 2 rescue breaths", "15 compressions : 1 rescue breath", "Continuous chest compressions", "Mouth-to-mouth only"], correct: 0, explanation: "نسبة الإنعاش الصحيحة (CPR) للبالغين هي 30 ضغطة : 2 نفخة إنقاذ."}
+        ];
+        
+        let currentQuestion = 0;
+        let answers = {};
+        let currentFilter = 'all';
+        
+        // تهيئة التطبيق
+        function init() {
+            loadAllQuestions();
+            createCategoryButtons();
+        }
+        
+        // إنشاء أزرار الفئات
+        function createCategoryButtons() {
+            const categories = new Set(allQuestions.map(q => q.category));
+            const filter = document.getElementById('categoryFilter');
+            filter.innerHTML = '<button class="category-btn active" onclick="filterByCategory(\'all\')">جميع الفئات</button>';
+            
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = 'category-btn';
+                btn.textContent = cat;
+                btn.onclick = () => filterByCategory(cat);
+                filter.appendChild(btn);
+            });
+        }
+        
+        // تصفية حسب الفئة
+        function filterByCategory(category) {
+            currentFilter = category;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            loadAllQuestions();
+        }
+        
+        // تحميل جميع الأسئلة
+        function loadAllQuestions() {
+            const list = document.getElementById('questionsList');
+            let filtered = currentFilter === 'all' ? allQuestions : allQuestions.filter(q => q.category === currentFilter);
+            
+            list.innerHTML = '';
+            filtered.forEach((q, index) => {
+                list.appendChild(createQuestionCard(q, index));
+            });
+        }
+        
+        // إنشاء بطاقة سؤال
+        function createQuestionCard(question, index) {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.onclick = () => toggleAnswer(question.id);
+            
+            const isAnswered = answers[question.id] !== undefined;
+            const isCorrect = answers[question.id] === question.correct;
+            
+            card.innerHTML = `
+                <div class="question-text">
+                    <span class="question-number">${question.id}</span>
+                    ${question.en}
+                </div>
+                <div class="question-ar">${question.ar}</div>
+                <div class="options">
+                    ${question.options.map((opt, idx) => `
+                        <div class="option ${answers[question.id] === idx ? (idx === question.correct ? 'correct' : 'incorrect') : ''}"
+                             onclick="selectAnswer(${question.id}, ${idx}, event)">
+                            ${String.fromCharCode(65 + idx)}. ${opt}
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="answer-section ${answers[question.id] !== undefined ? 'show' : ''}">
+                    <div class="answer-title">✅ الإجابة الصحيحة: ${String.fromCharCode(65 + question.correct)}</div>
+                    <div class="explanation">${question.explanation}</div>
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        // اختيار إجابة
+        function selectAnswer(questionId, optionIndex, event) {
+            event.stopPropagation();
+            answers[questionId] = optionIndex;
+            updateStats();
+            loadAllQuestions();
+        }
+        
+        // عرض/إخفاء الإجابة
+        function toggleAnswer(questionId) {
+            const card = document.querySelector(`[data-question="${questionId}"]`);
+            if (card) card.classList.toggle('active');
+        }
+        
+        // تحديث الإحصائيات
+        function updateStats() {
+            const total = allQuestions.length;
+            const answered = Object.keys(answers).length;
+            const correct = Object.keys(answers).filter(id => answers[id] === allQuestions[parseInt(id)-1].correct).length;
+            const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
+            
+            document.getElementById('answeredCount').textContent = answered;
+            document.getElementById('correctCount').textContent = correct;
+            document.getElementById('percentage').textContent = percentage + '%';
+        }
+        
+        // إعادة تعيين الإجابات
+        function resetAnswers() {
+            if (confirm('هل تريد إعادة تعيين جميع الإجابات؟')) {
+                answers = {};
+                updateStats();
+                loadAllQuestions();
+            }
+        }
+        
+        // تحميل النتائج
+        function downloadResults() {
+            let text = 'نتائج بنك أسئلة التشريح\n';
+            text += '================\n\n';
+            
+            allQuestions.forEach(q => {
+                text += `السؤال ${q.id}: ${q.ar}\n`;
+                if (answers[q.id] !== undefined) {
+                    text += `إجابتك: ${String.fromCharCode(65 + answers[q.id])}\n`;
+                    text += `الإجابة الصحيحة: ${String.fromCharCode(65 + q.correct)}\n`;
+                    text += `النتيجة: ${answers[q.id] === q.correct ? '✅ صحيح' : '❌ خاطئ'}\n`;
+                } else {
+                    text += `لم تجب على هذا السؤال\n`;
+                }
+                text += '\n';
+            });
+            
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'anatomy_results.txt';
+            a.click();
+        }
+        
+        // البحث
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('searchBox').addEventListener('keyup', function(e) {
+                const query = e.target.value.toLowerCase();
+                const list = document.getElementById('questionsList');
+                
+                let filtered = currentFilter === 'all' ? allQuestions : allQuestions.filter(q => q.category === currentFilter);
+                filtered = filtered.filter(q => 
+                    q.en.toLowerCase().includes(query) || 
+                    q.ar.toLowerCase().includes(query)
+                );
+                
+                list.innerHTML = '';
+                filtered.forEach((q, index) => {
+                    list.appendChild(createQuestionCard(q, index));
+                });
+            });
+            
+            init();
+        });
+    </script>
+</body>
+</html>
